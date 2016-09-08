@@ -1,0 +1,9 @@
+{
+  "cluster": {
+    "machines": [ "<% @etcd_members.each_with_index do |name, i| %>http://<%= name %>:<%= @etcd_client_port %><%= ',' if i < (@etcd_members.size - 1) %><% end -%>" ]
+  },
+  "config": {
+    "certFile": "<%= @etcd_cert_dir %>/client.srv.crt",
+    "keyFile": "<%= @etcd_cert_dir %>/client.srv.key"
+   }
+}

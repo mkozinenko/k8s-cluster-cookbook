@@ -1,0 +1,3 @@
+<% if node['kubernetes']['secure']['enabled'] == 'true' -%>
+KUBE_MASTER="--kubeconfig=<%= @etcd_cert_dir %>/kube.config"
+<% end -%>
