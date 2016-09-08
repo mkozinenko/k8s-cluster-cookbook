@@ -5,6 +5,12 @@
 # Copyright 2015-2016, Bloomberg Finance L.P.
 #
 
+case node['platform']
+  when 'redhat', 'centos', 'fedora'
+    yum_package "flannel #{node['kubernetes_cluster']['package']['flannel']['version']}"
+    yum_package "bridge-utils #{node['kubernetes_cluster']['package']['bridge_utils']['version']}"
+end
+
 service 'flanneld' do
   action :enable
 end
@@ -23,18 +29,13 @@ execute 'redo-docker-bridge' do
   notifies :restart, 'service[docker]', :immediately
 end
 
-etcdservers = []
-search(:node, 'tags:"etcd"') do |s|
-  etcdservers << s[:fqdn]
-end
-
 template '/etc/sysconfig/flanneld' do
   mode '0640'
   source 'flannel-flanneld.erb'
   variables(
     etcd_client_port: node['kubernetes']['etcd']['clientport'],
     etcd_cert_dir: node['kubernetes']['secure']['directory'],
-    etcd_members: etcdservers
+    etcd_members: node['kubernetes_cluster']['etcd']['members']
   )
   notifies :restart, 'service[flanneld]', :immediately
   notifies :run, 'execute[redo-docker-bridge]', :delayed

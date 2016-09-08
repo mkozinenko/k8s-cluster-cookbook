@@ -5,14 +5,6 @@
 # Copyright 2015-2016, Bloomberg Finance L.P.
 #
 
-unless Chef::Config[:solo]
-  etcdservers = []
-  search(:node, 'tags:"etcd"') do |s|
-    etcdservers << s[:fqdn]
-  end
-  node.override['kubernetes']['etcd']['members'] = etcdservers
-end
-
 case node['platform']
   when 'redhat', 'centos', 'fedora'
     yum_package "etcd"
@@ -37,7 +29,7 @@ template '/etc/etcd/etcd.conf' do
     etcd_client_token: node['kubernetes']['etcd']['token'],
     etcd_client_port: node['kubernetes']['etcd']['clientport'],
     etcd_peer_port: node['kubernetes']['etcd']['peerport'],
-    etcd_members: node['kubernetes']['etcd']['members'],
+    etcd_members: node['kubernetes_cluster']['etcd']['members'],
     etcd_cert_dir: node['kubernetes']['secure']['directory']
   )
   notifies :restart, 'service[etcd]', :immediately

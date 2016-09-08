@@ -41,7 +41,6 @@ default['kubernetes']['etcd'].tap do |etcd|
   # This defaults to chef server search capabilities in etcd.rb unless run in chef solo mode
   # If you override this, set this to ALL masters eg:
   # etcd['members'] = ["node1.example.com", "node2.example.com", "node3.example.com"]
-  etcd['members'] = nil
 
   # Set the ssl ca/cert/key for ETCD peer (master to master) communication when ['kubernetes']['secure']['enabled'] = 'true'
   etcd['peer']['ca'] = nil

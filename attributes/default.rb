@@ -61,3 +61,12 @@ default['kubernetes_cluster']['package']['cockpit']['version'] = '>= 0.71'
 default['kubernetes_cluster']['package']['docker_registry']['version'] = '>= 0.9.1'
 default['kubernetes_cluster']['package']['bridge_utils']['version'] = '>= 1.5'
 default['kubernetes_cluster']['package']['haproxy']['version'] = '>= 1.5.4'
+
+
+  search(:node, 'recipes:"kubernetes::etcd"') do |s|
+    default['kubernetes_cluster']['etcd']['members'] << s[:fqdn]
+  end
+
+search(:node, 'recipes:"kubernetes::master"') do |s|
+  default['kubernetes_cluster']['kubernetes']['masters'] << s[:fqdn]
+end

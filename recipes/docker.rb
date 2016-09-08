@@ -5,6 +5,11 @@
 # Copyright 2015-2016, Bloomberg Finance L.P.
 #
 
+case node['platform']
+  when 'redhat', 'centos', 'fedora'
+    yum_package "#{node['kubernetes_cluster']['package']['docker']['name']} #{node['kubernetes_cluster']['package']['docker']['version']}"
+end
+
 service 'docker' do
   action :enable
 end

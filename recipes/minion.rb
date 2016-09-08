@@ -11,6 +11,11 @@ node.override['kubelet']['register'] = 'true'
 include_recipe 'kubernetes-cluster::default'
 include_recipe 'kubernetes-cluster::proxy'
 
+case node['platform']
+  when 'redhat', 'centos', 'fedora'
+    yum_package "kubernetes-node #{node['kubernetes_cluster']['package']['kubernetes_node']['version']}"
+end
+
 if node['kubernetes']['secure']['enabled'] == 'true'
   group 'kube-services' do
     members ['kube']

@@ -10,11 +10,6 @@ service 'kube-apiserver' do
 end
 
 node.default['kubernetes']['master']['fqdn'] = node['fqdn']
-etcdservers = []
-search(:node, 'tags:"etcd"') do |s|
-  etcdservers << s[:fqdn]
-end
-node.override['kubernetes']['etcd']['members'] = etcdservers
 
 template '/etc/kubernetes/etcd.client.conf' do
   mode '0644'
@@ -36,7 +31,7 @@ template '/etc/kubernetes/apiserver' do
     kubernetes_api_port: node['kubernetes']['insecure']['apiport'],
     kubernetes_secure_api_port: node['kubernetes']['secure']['apiport'],
     kubernetes_master: node['kubernetes']['master']['fqdn'],
-    etcd_members: etcdservers,
+    etcd_members: node['kubernetes_cluster']['etcd']['members'],
     etcd_peer_port: 2379,
     kubernetes_network: node['kubernetes']['master']['service-network'],
     kubelet_port: node['kubelet']['port'],

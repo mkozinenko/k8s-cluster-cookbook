@@ -12,16 +12,6 @@ when 'redhat', 'centos', 'fedora'
   yum_package "haproxy #{node['kubernetes_cluster']['package']['haproxy']['version']}"
 end
 
-kube_masters = []
-search(:node, 'tags:"kubernetes.master"') do |s|
-  kube_masters << s[:fqdn]
-end
-
-etcdservers = []
-search(:node, 'tags:"etcd"') do |s|
-  etcdservers << s[:fqdn]
-end
-
 service 'haproxy' do
   action :enable
 end
@@ -31,10 +21,10 @@ template '/etc/haproxy/haproxy.cfg' do
   source 'proxy.erb'
   variables(
     kubernetes_api_port: node['kubernetes']['insecure']['apiport'],
-    api_servers: kube_masters,
+    api_servers: node['kubernetes_cluster']['kubernetes']['masters'],
     etcd_client_port: node['kubernetes']['etcd']['clientport'],
     kubernetes_secure_api_port: node['kubernetes']['secure']['apiport'],
-    etcd_members: etcdservers
+    etcd_members: node['kubernetes_cluster']['etcd']['members']
   )
   notifies :restart, 'service[haproxy]', :immediately
 end
